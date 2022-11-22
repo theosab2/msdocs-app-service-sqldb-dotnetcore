@@ -2,11 +2,12 @@ name: Build ASP.Net Core app
 env:
   DOTNET_VERSION: '6.0.x'
 on:
-  pull_request:
   push:
+    branches: [ "main" ]
     paths:
       - 'DotNetCoreSqlDb/**'
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: windows-latest
@@ -26,3 +27,12 @@ jobs:
             ${{ runner.os }}-nuget-
       - name: Build with dotnet
         run: dotnet build --configuration Release
+
+      - name: publish
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+
+      - name: Upload artifact for deployment job
+      - uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: ${{env.DOTNET_ROOT}}/myapp
